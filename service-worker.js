@@ -5,8 +5,8 @@ const urlsToCache = [
   "/static/js/bundle.js",
   "/static/js/main.chunk.js",
   "/static/js/0.chunk.js",
-  "/icon-192.png",
-  "/icon-512.png",
+  "/saco192.png",
+  "/saco512.png",
 ];
 
 self.addEventListener("install", (event) => {
