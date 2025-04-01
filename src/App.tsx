@@ -150,7 +150,7 @@ const App: React.FC = () => {
           <Typography variant="h4">Hospitalia</Typography>
           <Avatar
             sx={{ width: 50, height: 50, margim: 2 }}
-            src="icon-192x192.png"
+            src="saco192.png"
             alt="Logo"
           />
         </Box>
