@@ -136,9 +136,14 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <Container
-        component={Paper}
-        sx={{ padding: 4, textAlign: "center", mt: 5, maxWidth: "800px" }}
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+        }}
       >
         {/* Título con imagen */}
         <Box
@@ -156,7 +161,7 @@ const App: React.FC = () => {
         </Box>
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} style={{ width: "90%" }}>
           <TextField
             name="fecha"
             label="Fecha"
@@ -299,7 +304,7 @@ const App: React.FC = () => {
             </Button>
           </>
         )}
-      </Container>
+      </div>
     </ThemeProvider>
   );
 };
