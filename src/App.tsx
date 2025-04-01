@@ -145,7 +145,7 @@ const App: React.FC = () => {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          maxWidth: { xs: "100%", sm: "80%", md: "600px" },
+          maxWidth: { xs: "100%", height: "100%" },
         }}
       >
         {/* Título con imagen */}
@@ -174,7 +174,7 @@ const App: React.FC = () => {
             value={formData.fecha}
             onChange={handleChange}
             sx={{
-              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
+              input: { color: "#ffffff", fontSize: "1.3rem" }, // Aumenta el tamaño de la fuente
               ".MuiOutlinedInput-root": {
                 borderRadius: "10px", // Bordes redondeados para mejorar la estética
               },
@@ -275,7 +275,7 @@ const App: React.FC = () => {
             }}
           />
           <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
-            Añadir
+            <b>Añadir</b>
           </Button>
         </form>
 
@@ -325,7 +325,7 @@ const App: React.FC = () => {
               sx={{ mt: 2, mr: 2 }}
               onClick={handleClearTable}
             >
-              Limpiar Tabla
+              <b>Limpiar Tabla</b>
             </Button>
             <Button
               variant="outlined"
@@ -333,7 +333,7 @@ const App: React.FC = () => {
               sx={{ mt: 2, mr: 2 }}
               onClick={generateExcel}
             >
-              Generar Excel
+              <b>Generar Excel</b>
             </Button>
           </>
         )}
