@@ -3,5 +3,5 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: "https://github.com/AleTartaglia/hospitalia-finance-tracker", // Ruta para GitHub Pages
+  base: "/hospitalia-finance-tracker/", // Ruta para GitHub Pages
 });

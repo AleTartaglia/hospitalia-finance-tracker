@@ -7,7 +7,7 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register(
-        "https://github.com/AleTartaglia/hospitalia-finance-tracker/service-worker.js"
+        "https://aletartaglia.github.io/hospitalia-finance-tracker/service-worker.js"
       )
       .then((reg) => console.log("Service Worker registered:", reg))
       .catch((err) =>
