@@ -3,6 +3,7 @@ import {
   Avatar,
   Box,
   Button,
+  Container,
   createTheme,
   Paper,
   Table,
@@ -135,13 +136,16 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
+      <Container
+        component={Paper}
+        sx={{
+          padding: 4,
+          textAlign: "center",
           display: "flex",
-          alignItems: "center",
           flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          maxWidth: { xs: "100%", sm: "80%", md: "600px" },
         }}
       >
         {/* Título con imagen */}
@@ -169,6 +173,12 @@ const App: React.FC = () => {
             variant="outlined"
             value={formData.fecha}
             onChange={handleChange}
+            sx={{
+              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
+              ".MuiOutlinedInput-root": {
+                borderRadius: "10px", // Bordes redondeados para mejorar la estética
+              },
+            }}
           />
           <TextField
             name="ingresos"
@@ -179,6 +189,12 @@ const App: React.FC = () => {
             variant="outlined"
             value={formData.ingresos}
             onChange={handleChange}
+            sx={{
+              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
+              ".MuiOutlinedInput-root": {
+                borderRadius: "10px", // Bordes redondeados para mejorar la estética
+              },
+            }}
           />
           <TextField
             name="egresos"
@@ -189,6 +205,12 @@ const App: React.FC = () => {
             variant="outlined"
             value={formData.egresos}
             onChange={handleChange}
+            sx={{
+              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
+              ".MuiOutlinedInput-root": {
+                borderRadius: "10px", // Bordes redondeados para mejorar la estética
+              },
+            }}
           />
           <TextField
             name="saldoAnterior"
@@ -199,6 +221,12 @@ const App: React.FC = () => {
             variant="outlined"
             value={formData.saldoAnterior}
             onChange={handleChange}
+            sx={{
+              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
+              ".MuiOutlinedInput-root": {
+                borderRadius: "10px", // Bordes redondeados para mejorar la estética
+              },
+            }}
           />
           <TextField
             name="dolares"
@@ -209,6 +237,12 @@ const App: React.FC = () => {
             variant="outlined"
             value={formData.dolares}
             onChange={handleChange}
+            sx={{
+              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
+              ".MuiOutlinedInput-root": {
+                borderRadius: "10px", // Bordes redondeados para mejorar la estética
+              },
+            }}
           />
           <TextField
             name="causa"
@@ -218,6 +252,12 @@ const App: React.FC = () => {
             variant="outlined"
             value={formData.causa}
             onChange={handleChange}
+            sx={{
+              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
+              ".MuiOutlinedInput-root": {
+                borderRadius: "10px", // Bordes redondeados para mejorar la estética
+              },
+            }}
           />
           <TextField
             name="observaciones"
@@ -227,6 +267,12 @@ const App: React.FC = () => {
             variant="outlined"
             value={formData.observaciones}
             onChange={handleChange}
+            sx={{
+              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
+              ".MuiOutlinedInput-root": {
+                borderRadius: "10px", // Bordes redondeados para mejorar la estética
+              },
+            }}
           />
           <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
             Añadir
@@ -240,50 +286,38 @@ const App: React.FC = () => {
               component={Paper}
               sx={{ mt: 3, backgroundColor: "#1e1e1e" }}
             >
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ color: "#ffffff" }}>Fecha</TableCell>
-                    <TableCell sx={{ color: "#ffffff" }}>Ingresos</TableCell>
-                    <TableCell sx={{ color: "#ffffff" }}>Egresos</TableCell>
-                    <TableCell sx={{ color: "#ffffff" }}>
-                      Saldo Anterior
-                    </TableCell>
-                    <TableCell sx={{ color: "#ffffff" }}>Dólares</TableCell>
-                    <TableCell sx={{ color: "#ffffff" }}>Causa</TableCell>
-                    <TableCell sx={{ color: "#ffffff" }}>
-                      Observaciones
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows.map((row, index) => (
-                    <TableRow key={index}>
-                      <TableCell sx={{ color: "#ffffff" }}>
-                        {row.fecha}
-                      </TableCell>
-                      <TableCell sx={{ color: "#ffffff" }}>
-                        {row.ingresos}
-                      </TableCell>
-                      <TableCell sx={{ color: "#ffffff" }}>
-                        {row.egresos}
-                      </TableCell>
-                      <TableCell sx={{ color: "#ffffff" }}>
-                        {row.saldoAnterior}
-                      </TableCell>
-                      <TableCell sx={{ color: "#ffffff" }}>
-                        {row.dolares}
-                      </TableCell>
-                      <TableCell sx={{ color: "#ffffff" }}>
-                        {row.causa}
-                      </TableCell>
-                      <TableCell sx={{ color: "#ffffff" }}>
-                        {row.observaciones}
-                      </TableCell>
+              <Box sx={{ overflowX: "auto", width: "100%" }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Fecha</TableCell>
+                      <TableCell>Ingresos</TableCell>
+                      <TableCell>Egresos</TableCell>
+                      <TableCell>Balance</TableCell>
+                      <TableCell>Dólares</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHead>
+                  <TableBody>
+                    {rows.map((row, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{row.fecha}</TableCell>
+                        <TableCell>
+                          {currencyFormatter.format(row.ingresos)}
+                        </TableCell>
+                        <TableCell>
+                          {currencyFormatter.format(row.egresos)}
+                        </TableCell>
+                        <TableCell>
+                          {currencyFormatter.format(row.balance)}
+                        </TableCell>
+                        <TableCell>
+                          {currencyFormatter.format(row.dolares)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Box>
             </TableContainer>
             <Button
               variant="contained"
@@ -303,7 +337,7 @@ const App: React.FC = () => {
             </Button>
           </>
         )}
-      </div>
+      </Container>
     </ThemeProvider>
   );
 };
