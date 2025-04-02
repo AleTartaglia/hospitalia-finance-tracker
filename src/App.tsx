@@ -41,6 +41,8 @@ interface RowData {
   causa: string;
   observaciones: string;
   balanceTotal: string;
+  dolares: string;
+  balanceDolares: string;
 }
 
 const App: React.FC = () => {
@@ -51,6 +53,7 @@ const App: React.FC = () => {
     saldoAnterior: "",
     causa: "",
     observaciones: "",
+    dolares: "",
   });
 
   const [totals, setTotals] = useState({
@@ -58,9 +61,9 @@ const App: React.FC = () => {
     totalEgresos: 0,
     totalSaldoAnterior: 0,
     balanceTotal: 0,
+    totalDolares: 0,
   });
 
-  // Ahora tipamos rows con RowData
   const [rows, setRows] = useState<RowData[]>([]);
 
   const sanitizeNumber = (value: string) => {
@@ -78,17 +81,19 @@ const App: React.FC = () => {
     const newIngresos = sanitizeNumber(formData.ingresos);
     const newEgresos = sanitizeNumber(formData.egresos);
     const newSaldoAnterior = sanitizeNumber(formData.saldoAnterior);
+    const newDolares = sanitizeNumber(formData.dolares);
 
     setTotals((prevTotals) => {
       const updatedTotalIngresos = prevTotals.totalIngresos + newIngresos;
       const updatedTotalEgresos = prevTotals.totalEgresos + newEgresos;
       const updatedTotalSaldoAnterior =
         prevTotals.totalSaldoAnterior + newSaldoAnterior;
+      const updatedTotalDolares = prevTotals.totalDolares + newDolares;
       const updatedBalanceTotal =
         updatedTotalIngresos + updatedTotalSaldoAnterior - updatedTotalEgresos;
 
       const newRow: RowData = {
-        fecha: formData.fecha || "",
+        fecha: formData.fecha || "-",
         ingresos: newIngresos > 0 ? currencyFormatter.format(newIngresos) : "-",
         egresos: newEgresos > 0 ? currencyFormatter.format(newEgresos) : "-",
         saldoAnterior:
@@ -98,6 +103,9 @@ const App: React.FC = () => {
         causa: formData.causa || "-",
         observaciones: formData.observaciones || "-",
         balanceTotal: currencyFormatter.format(updatedBalanceTotal),
+        dolares: newDolares > 0 ? newDolares.toFixed(2) : "-",
+        balanceDolares:
+          newDolares > 0 ? currencyFormatter.format(newDolares) : "-",
       };
 
       setRows([...rows, newRow]);
@@ -107,6 +115,7 @@ const App: React.FC = () => {
         totalEgresos: updatedTotalEgresos,
         totalSaldoAnterior: updatedTotalSaldoAnterior,
         balanceTotal: updatedBalanceTotal,
+        totalDolares: updatedTotalDolares,
       };
     });
 
@@ -117,6 +126,7 @@ const App: React.FC = () => {
       saldoAnterior: "",
       causa: "",
       observaciones: "",
+      dolares: "",
     });
   };
 
@@ -127,6 +137,7 @@ const App: React.FC = () => {
       totalEgresos: 0,
       totalSaldoAnterior: 0,
       balanceTotal: 0,
+      totalDolares: 0,
     });
   };
 
@@ -139,6 +150,8 @@ const App: React.FC = () => {
       causa: "-",
       observaciones: "-",
       balanceTotal: currencyFormatter.format(totals.balanceTotal),
+      dolares: currencyFormatter.format(totals.totalDolares),
+      balanceDolares: currencyFormatter.format(totals.totalDolares),
     };
 
     const updatedRows = [...rows, totalRow];
@@ -217,6 +230,15 @@ const App: React.FC = () => {
             value={formData.observaciones}
             onChange={handleChange}
           />
+          <TextField
+            name="dolares"
+            label="Dólares"
+            type="number"
+            fullWidth
+            margin="normal"
+            value={formData.dolares}
+            onChange={handleChange}
+          />
           <Button
             type="submit"
             variant="contained"
@@ -241,6 +263,8 @@ const App: React.FC = () => {
                     <TableCell>Causa</TableCell>
                     <TableCell>Observaciones</TableCell>
                     <TableCell>Balance Total</TableCell>
+                    <TableCell>Dólares</TableCell>
+                    <TableCell>Balance en Dólares</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -253,6 +277,8 @@ const App: React.FC = () => {
                       <TableCell>{row.causa}</TableCell>
                       <TableCell>{row.observaciones}</TableCell>
                       <TableCell>{row.balanceTotal}</TableCell>
+                      <TableCell>{row.dolares}</TableCell>
+                      <TableCell>{row.balanceDolares}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
