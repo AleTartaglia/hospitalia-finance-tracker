@@ -25,6 +25,7 @@ const darkTheme = createTheme({
     background: { default: "#121212", paper: "#1e1e1e" },
     text: { primary: "#ffffff" },
   },
+  typography: { fontSize: 38 },
 });
 
 const currencyFormatter = new Intl.NumberFormat("es-AR", {
@@ -168,8 +169,6 @@ const App: React.FC = () => {
         sx={{
           padding: 4,
           textAlign: "center",
-          width: "100vw",
-          height: "100vh",
         }}
       >
         <Box
