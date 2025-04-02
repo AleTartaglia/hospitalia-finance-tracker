@@ -163,7 +163,15 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <Container component={Paper} sx={{ padding: 4, textAlign: "center" }}>
+      <Container
+        component={Paper}
+        sx={{
+          padding: 4,
+          textAlign: "center",
+          width: "100vw",
+          height: "100vh",
+        }}
+      >
         <Box
           display="flex"
           alignItems="center"
