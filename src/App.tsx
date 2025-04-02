@@ -32,25 +32,41 @@ const currencyFormatter = new Intl.NumberFormat("es-AR", {
   currency: "ARS",
 });
 
+// Definir la interfaz para los datos de las filas
+interface RowData {
+  fecha: string;
+  ingresos: string;
+  egresos: string;
+  saldoAnterior: string;
+  causa: string;
+  observaciones: string;
+  balanceTotal: string;
+}
+
 const App: React.FC = () => {
   const [formData, setFormData] = useState({
     fecha: "",
     ingresos: "",
     egresos: "",
     saldoAnterior: "",
-    dolares: "",
     causa: "",
     observaciones: "",
   });
 
   const [totals, setTotals] = useState({
-    ingresos: 0,
-    egresos: 0,
-    balance: 0,
-    saldoAnterior: 0,
-    dolares: 0,
+    totalIngresos: 0,
+    totalEgresos: 0,
+    totalSaldoAnterior: 0,
+    balanceTotal: 0,
   });
-  const [rows, setRows] = useState<any[]>([]);
+
+  // Ahora tipamos rows con RowData
+  const [rows, setRows] = useState<RowData[]>([]);
+
+  const sanitizeNumber = (value: string) => {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? 0 : parsed;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -58,35 +74,40 @@ const App: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newIngresos = parseFloat(formData.ingresos) || 0;
-    const newEgresos = parseFloat(formData.egresos) || 0;
-    const newSaldoAnterior = parseFloat(formData.saldoAnterior) || 0;
-    const newDolares = parseFloat(formData.dolares) || 0;
 
-    const newRow = {
-      fecha: formData.fecha || "",
-      ingresos: newIngresos ? currencyFormatter.format(newIngresos) : "",
-      egresos: newEgresos ? currencyFormatter.format(newEgresos) : "",
-      saldoAnterior: newSaldoAnterior
-        ? currencyFormatter.format(newSaldoAnterior)
-        : "",
-      dolares: newDolares ? currencyFormatter.format(newDolares) : "",
-      causa: formData.causa || "",
-      observaciones: formData.observaciones || "",
-    };
+    const newIngresos = sanitizeNumber(formData.ingresos);
+    const newEgresos = sanitizeNumber(formData.egresos);
+    const newSaldoAnterior = sanitizeNumber(formData.saldoAnterior);
 
-    setRows([...rows, newRow]);
+    setTotals((prevTotals) => {
+      const updatedTotalIngresos = prevTotals.totalIngresos + newIngresos;
+      const updatedTotalEgresos = prevTotals.totalEgresos + newEgresos;
+      const updatedTotalSaldoAnterior =
+        prevTotals.totalSaldoAnterior + newSaldoAnterior;
+      const updatedBalanceTotal =
+        updatedTotalIngresos + updatedTotalSaldoAnterior - updatedTotalEgresos;
 
-    setTotals({
-      ingresos: totals.ingresos + newIngresos,
-      egresos: totals.egresos + newEgresos,
-      saldoAnterior: newSaldoAnterior,
-      dolares: totals.dolares + newDolares,
-      balance:
-        newSaldoAnterior +
-        totals.ingresos +
-        newIngresos -
-        (totals.egresos + newEgresos),
+      const newRow: RowData = {
+        fecha: formData.fecha || "",
+        ingresos: newIngresos > 0 ? currencyFormatter.format(newIngresos) : "-",
+        egresos: newEgresos > 0 ? currencyFormatter.format(newEgresos) : "-",
+        saldoAnterior:
+          newSaldoAnterior > 0
+            ? currencyFormatter.format(newSaldoAnterior)
+            : "-",
+        causa: formData.causa || "-",
+        observaciones: formData.observaciones || "-",
+        balanceTotal: currencyFormatter.format(updatedBalanceTotal),
+      };
+
+      setRows([...rows, newRow]);
+
+      return {
+        totalIngresos: updatedTotalIngresos,
+        totalEgresos: updatedTotalEgresos,
+        totalSaldoAnterior: updatedTotalSaldoAnterior,
+        balanceTotal: updatedBalanceTotal,
+      };
     });
 
     setFormData({
@@ -94,7 +115,6 @@ const App: React.FC = () => {
       ingresos: "",
       egresos: "",
       saldoAnterior: "",
-      dolares: "",
       causa: "",
       observaciones: "",
     });
@@ -103,28 +123,22 @@ const App: React.FC = () => {
   const handleClearTable = () => {
     setRows([]);
     setTotals({
-      ingresos: 0,
-      egresos: 0,
-      balance: 0,
-      saldoAnterior: 0,
-      dolares: 0,
+      totalIngresos: 0,
+      totalEgresos: 0,
+      totalSaldoAnterior: 0,
+      balanceTotal: 0,
     });
   };
 
   const generateExcel = () => {
-    const totalRow = {
+    const totalRow: RowData = {
       fecha: "Totales",
-      ingresos: totals.ingresos
-        ? currencyFormatter.format(totals.ingresos)
-        : "",
-      egresos: totals.egresos ? currencyFormatter.format(totals.egresos) : "",
-      saldoAnterior: totals.saldoAnterior
-        ? currencyFormatter.format(totals.saldoAnterior)
-        : "",
-      dolares: totals.dolares ? currencyFormatter.format(totals.dolares) : "",
-      causa: "—",
-      observaciones: "—",
-      balance: totals.balance ? currencyFormatter.format(totals.balance) : "",
+      ingresos: currencyFormatter.format(totals.totalIngresos),
+      egresos: currencyFormatter.format(totals.totalEgresos),
+      saldoAnterior: currencyFormatter.format(totals.totalSaldoAnterior),
+      causa: "-",
+      observaciones: "-",
+      balanceTotal: currencyFormatter.format(totals.balanceTotal),
     };
 
     const updatedRows = [...rows, totalRow];
@@ -136,19 +150,7 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <Container
-        component={Paper}
-        sx={{
-          padding: 4,
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          maxWidth: { xs: "100%", height: "100%" },
-        }}
-      >
-        {/* Título con imagen */}
+      <Container component={Paper} sx={{ padding: 4, textAlign: "center" }}>
         <Box
           display="flex"
           alignItems="center"
@@ -163,22 +165,14 @@ const App: React.FC = () => {
           />
         </Box>
 
-        {/* Formulario */}
-        <form onSubmit={handleSubmit} style={{ width: "90%" }}>
+        <form onSubmit={handleSubmit}>
           <TextField
             name="fecha"
             label="Fecha"
             fullWidth
             margin="normal"
-            variant="outlined"
             value={formData.fecha}
             onChange={handleChange}
-            sx={{
-              input: { color: "#ffffff", fontSize: "1.3rem" }, // Aumenta el tamaño de la fuente
-              ".MuiOutlinedInput-root": {
-                borderRadius: "10px", // Bordes redondeados para mejorar la estética
-              },
-            }}
           />
           <TextField
             name="ingresos"
@@ -186,15 +180,8 @@ const App: React.FC = () => {
             type="number"
             fullWidth
             margin="normal"
-            variant="outlined"
             value={formData.ingresos}
             onChange={handleChange}
-            sx={{
-              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
-              ".MuiOutlinedInput-root": {
-                borderRadius: "10px", // Bordes redondeados para mejorar la estética
-              },
-            }}
           />
           <TextField
             name="egresos"
@@ -202,15 +189,8 @@ const App: React.FC = () => {
             type="number"
             fullWidth
             margin="normal"
-            variant="outlined"
             value={formData.egresos}
             onChange={handleChange}
-            sx={{
-              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
-              ".MuiOutlinedInput-root": {
-                borderRadius: "10px", // Bordes redondeados para mejorar la estética
-              },
-            }}
           />
           <TextField
             name="saldoAnterior"
@@ -218,123 +198,92 @@ const App: React.FC = () => {
             type="number"
             fullWidth
             margin="normal"
-            variant="outlined"
             value={formData.saldoAnterior}
             onChange={handleChange}
-            sx={{
-              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
-              ".MuiOutlinedInput-root": {
-                borderRadius: "10px", // Bordes redondeados para mejorar la estética
-              },
-            }}
-          />
-          <TextField
-            name="dolares"
-            label="Dólares"
-            type="number"
-            fullWidth
-            margin="normal"
-            variant="outlined"
-            value={formData.dolares}
-            onChange={handleChange}
-            sx={{
-              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
-              ".MuiOutlinedInput-root": {
-                borderRadius: "10px", // Bordes redondeados para mejorar la estética
-              },
-            }}
           />
           <TextField
             name="causa"
             label="Causa"
             fullWidth
             margin="normal"
-            variant="outlined"
             value={formData.causa}
             onChange={handleChange}
-            sx={{
-              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
-              ".MuiOutlinedInput-root": {
-                borderRadius: "10px", // Bordes redondeados para mejorar la estética
-              },
-            }}
           />
           <TextField
             name="observaciones"
             label="Observaciones"
             fullWidth
             margin="normal"
-            variant="outlined"
             value={formData.observaciones}
             onChange={handleChange}
-            sx={{
-              input: { color: "#ffffff", fontSize: "1.2rem" }, // Aumenta el tamaño de la fuente
-              ".MuiOutlinedInput-root": {
-                borderRadius: "10px", // Bordes redondeados para mejorar la estética
-              },
-            }}
           />
-          <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
-            <b>Añadir</b>
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{ mt: 2 }}
+            disableElevation
+          >
+            Añadir
           </Button>
         </form>
 
-        {/* Tabla de vista previa */}
         {rows.length > 0 && (
           <>
-            <TableContainer
-              component={Paper}
-              sx={{ mt: 3, backgroundColor: "#1e1e1e" }}
-            >
-              <Box sx={{ overflowX: "auto", width: "100%" }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Fecha</TableCell>
-                      <TableCell>Ingresos</TableCell>
-                      <TableCell>Egresos</TableCell>
-                      <TableCell>Balance</TableCell>
-                      <TableCell>Dólares</TableCell>
+            <TableContainer component={Paper} sx={{ mt: 3 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Fecha</TableCell>
+                    <TableCell>Ingresos</TableCell>
+                    <TableCell>Egresos</TableCell>
+                    <TableCell>Saldo Anterior</TableCell>
+                    <TableCell>Causa</TableCell>
+                    <TableCell>Observaciones</TableCell>
+                    <TableCell>Balance Total</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{row.fecha}</TableCell>
+                      <TableCell>{row.ingresos}</TableCell>
+                      <TableCell>{row.egresos}</TableCell>
+                      <TableCell>{row.saldoAnterior}</TableCell>
+                      <TableCell>{row.causa}</TableCell>
+                      <TableCell>{row.observaciones}</TableCell>
+                      <TableCell>{row.balanceTotal}</TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{row.fecha}</TableCell>
-                        <TableCell>
-                          {currencyFormatter.format(row.ingresos)}
-                        </TableCell>
-                        <TableCell>
-                          {currencyFormatter.format(row.egresos)}
-                        </TableCell>
-                        <TableCell>
-                          {currencyFormatter.format(row.balance)}
-                        </TableCell>
-                        <TableCell>
-                          {currencyFormatter.format(row.dolares)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Box>
+                  ))}
+                </TableBody>
+              </Table>
             </TableContainer>
-            <Button
-              variant="contained"
-              color="error"
-              sx={{ mt: 2, mr: 2 }}
-              onClick={handleClearTable}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 2,
+                flexDirection: "column",
+              }}
             >
-              <b>Limpiar Tabla</b>
-            </Button>
-            <Button
-              variant="outlined"
-              color="success"
-              sx={{ mt: 2, mr: 2 }}
-              onClick={generateExcel}
-            >
-              <b>Generar Excel</b>
-            </Button>
+              <Button
+                variant="contained"
+                color="error"
+                sx={{ mt: 2, mr: 2 }}
+                onClick={handleClearTable}
+              >
+                <b>Limpiar Tabla</b>
+              </Button>
+              <Button
+                variant="outlined"
+                color="success"
+                sx={{ mt: 2, mr: 2 }}
+                onClick={generateExcel}
+              >
+                <b>Generar Excel</b>
+              </Button>
+            </Box>
           </>
         )}
       </Container>
